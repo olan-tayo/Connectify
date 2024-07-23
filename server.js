@@ -2,16 +2,24 @@ import express from "express";
 const app = express();
 import "dotenv/config";
 import auth from "./routes/auth/auth.js";
-const port = process.env.PORT || 8000;
-
-/////// SERVER
-app.listen(3000, () => {
-  console.log("App running on port 3000");
+import profile from "./routes/profile/profile.js";
+import dbMiddleware from "./middlewares/dbMiddleware.js";
+import { connectToDB } from "./database/db.js";
+const PORT = process.env.PORT || 8000;
+connectToDB((err) => {
+  if (!err) {
+    /////// SERVER
+    app.listen(PORT, () => {
+      console.log(`App running on port ${PORT}`);
+    });
+  }
 });
+app.use(dbMiddleware);
 
 /////// MIDDLEWARES
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 ////// ROUTES
-app.get("/api/auth", auth);
+app.use("/api/auth", auth);
+app.use("/api/profile", profile);
