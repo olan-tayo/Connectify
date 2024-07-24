@@ -6,7 +6,6 @@ export const GetUsers = (req, res) => {
     .sort({ author: 1 })
     .forEach((user) => users.push(user))
     .then(() => {
-      console.log(users);
       res.status(200).json({ data: users, total: users.length });
     })
     .catch((err) => {

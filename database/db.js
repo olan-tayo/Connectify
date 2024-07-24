@@ -12,7 +12,6 @@ export const connectToDB = (cb) => {
       return cb();
     })
     .catch((error) => {
-      console.log(error);
       return cb(error);
     });
 };
