@@ -1,16 +1,47 @@
-export const GetUsers = (req, res) => {
+export const GetAllUsers = async (req, res) => {
   const db = req.db;
-  const users = [];
-  db.collection("auth")
-    .find()
-    .sort({ author: 1 })
-    .forEach((user) => users.push(user))
-    .then(() => {
-      res.status(200).json({ data: users, total: users.length });
-    })
-    .catch((err) => {
+  try {
+    const users = await db
+      .collection("auth")
+      .find()
+      .sort({ author: 1 })
+      .toArray();
+    if (users.length === 0) {
       res
-        .status(500)
-        .json({ error: "Could not retrieve users. Try again now" });
+        .status(404)
+        .json({ data: [], message: "There are no users at the momemt" });
+    }
+    users.forEach((user) => {
+      delete user.password;
     });
+    res.status(200).json({ data: users, total: users.length });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Could not retrieve users. Try again now" });
+  }
+};
+
+export const GetAllProfiles = async (req, res) => {
+  const db = req.db;
+  const id = req.params.id;
+  try {
+    const users = await db
+      .collection("auth")
+      .find()
+      .sort({ author: 1 })
+      .toArray();
+    if (users.length === 0) {
+      res
+        .status(404)
+        .json({ data: [], message: "There are no profiles at the momemt" });
+    }
+    users.forEach((user) => {
+      delete user.password;
+    });
+    const filteredUser = users.filter((user) => user._id.toString() !== id);
+    res.status(200).json({ data: filteredUser, total: filteredUser.length });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Could not retrieve users. Try again now" });
+  }
 };

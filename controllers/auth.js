@@ -42,7 +42,7 @@ export const SignUp = async (req, res) => {
         .status(500)
         .json({ error: "Could not create user. Try again now" });
     }
-    res.status(201).json({ data: body, message: "User created successfully!" });
+    res.status(201).json({ message: "User created successfully!" });
   } catch {
     res.status(500).json({
       error:
