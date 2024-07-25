@@ -4,18 +4,19 @@ import "dotenv/config";
 import auth from "./routes/auth/auth.js";
 import profile from "./routes/profile/profile.js";
 import verifyToken from "./middlewares/verifyTokenMiddleware.js";
-import { connectToDB } from "./util/database.js";
+import mongoose from "mongoose";
 const PORT = process.env.PORT || 8000;
-connectToDB((err) => {
-  if (!err) {
-    /////// SERVER
+
+mongoose
+  .connect(process.env.DB_URL)
+  .then((result) => {
     app.listen(PORT, () => {
       console.log(`App running on port ${PORT}`);
     });
-  }
-});
-
-// app.use(dbMiddleware);
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 
 /////// MIDDLEWARES
 app.use(express.json());
