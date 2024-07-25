@@ -1,7 +1,7 @@
 import { MongoClient } from "mongodb";
 import "dotenv/config";
 
-// Connection URL
+// DB URL
 const url = process.env.DB_URL;
 
 var dbConnection;
