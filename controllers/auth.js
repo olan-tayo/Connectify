@@ -1,10 +1,14 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
+import { getDB } from "../util/database.js";
 
 export const SignUp = async (req, res) => {
-  const db = req.db;
+  // const {
+  //   body: { first_name, last_name, email, user },
+  // } = req;
   try {
+    const db = getDB();
     if (!req.body.password) {
       return res.status(400).json({ error: "Password is compulsory!" });
     }
@@ -52,12 +56,12 @@ export const SignUp = async (req, res) => {
 };
 
 export const SignIn = async (req, res) => {
-  const db = req.db;
   const body = {
     email: req.body.email,
     password: req.body.password,
   };
   try {
+    const db = getDB();
     const existingUser = await db
       .collection("auth")
       .findOne({ email: body.email });

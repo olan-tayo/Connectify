@@ -3,9 +3,8 @@ const app = express();
 import "dotenv/config";
 import auth from "./routes/auth/auth.js";
 import profile from "./routes/profile/profile.js";
-import dbMiddleware from "./middlewares/dbMiddleware.js";
-import { connectToDB } from "./database/db.js";
 import verifyToken from "./middlewares/verifyTokenMiddleware.js";
+import { connectToDB } from "./util/database.js";
 const PORT = process.env.PORT || 8000;
 connectToDB((err) => {
   if (!err) {
@@ -15,7 +14,8 @@ connectToDB((err) => {
     });
   }
 });
-app.use(dbMiddleware);
+
+// app.use(dbMiddleware);
 
 /////// MIDDLEWARES
 app.use(express.json());
