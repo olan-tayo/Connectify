@@ -1,75 +1,63 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
-import { getDB } from "../util/database.js";
+import createUser from "../models/auth/signUp.js";
 
 export const SignUp = async (req, res) => {
-  // const {
-  //   body: { first_name, last_name, email, user },
-  // } = req;
+  const { firstName, lastName, email, username, phoneNumber, password } =
+    req.body;
+
   try {
-    const db = getDB();
-    if (!req.body.password) {
-      return res.status(400).json({ error: "Password is compulsory!" });
-    }
-
-    const salt = await bcrypt.genSalt(10);
-    const secPass = await bcrypt.hash(req.body.password, salt);
-    const body = {
-      first_name: req.body.first_name,
-      last_name: req.body.last_name,
-      email: req.body.email,
-      username: req.body.username,
-      phone_number: req.body.phone_number,
-      password: secPass,
-    };
-
-    const existingUser = await db.collection("auth").findOne({
-      $or: [
-        { phone_number: body.phone_number },
-        { email: body.email },
-        { username: body.username },
-      ],
+    const existingUser = await createUser.findOne({
+      $or: [{ phoneNumber }, { email }, { username }],
     });
 
     if (existingUser) {
       return res.status(400).json({
         error:
-          "User already exist! Try using a different phone number, email or username",
+          "User already exists! Try using a different phone number, email, or username",
       });
     }
 
-    const createUser = await db.collection("auth").insertOne(body);
+    const newUser = new createUser({
+      firstName,
+      lastName,
+      email,
+      username,
+      phoneNumber,
+      password,
+    });
 
-    if (!createUser) {
+    const savedUser = await newUser.save();
+
+    if (!savedUser) {
       return res
         .status(500)
-        .json({ error: "Could not create user. Try again now" });
+        .json({ error: "Could not create user. Try again later." });
     }
+
     res.status(201).json({ message: "User created successfully!" });
-  } catch {
+  } catch (error) {
     res.status(500).json({
       error:
-        "Something went wrong while creating this user. Please try again now",
+        "Something went wrong while creating this user. Please try again later.",
+      details: error.message,
     });
   }
 };
 
 export const SignIn = async (req, res) => {
-  const body = {
-    email: req.body.email,
-    password: req.body.password,
-  };
+  const {
+    body: { email, password },
+  } = req;
   try {
-    const db = getDB();
-    const existingUser = await db
-      .collection("auth")
-      .findOne({ email: body.email });
+    const existingUser = await createUser.findOne({ email });
+
     if (!existingUser) {
       return res.status(400).json({ error: "Email is invalid" });
     }
     const passwordCompare = await bcrypt.compare(
-      body.password,
+      password,
       existingUser.password
     );
     if (!passwordCompare) {
@@ -78,10 +66,10 @@ export const SignIn = async (req, res) => {
 
     const user = {
       _id: existingUser._id,
-      first_name: existingUser.first_name,
-      last_name: existingUser.last_name,
+      firstName: existingUser.firstName,
+      lastName: existingUser.lastName,
       username: existingUser.username,
-      phone_number: existingUser.phone_number,
+      phoneNumber: existingUser.phoneNumber,
     };
 
     const token = jwt.sign({ user_details: user }, process.env.JWT_SECRET, {

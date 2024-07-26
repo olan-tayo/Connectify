@@ -1,9 +1,8 @@
-import { getDB } from "../util/database.js";
 // import pkg from "mongodb";
 // const { ObjectId } = pkg;
 
 export const GetAllUsers = async (req, res) => {
-  const db = getDB();
+  const db = "";
   try {
     const users = await db
       .collection("auth")
@@ -26,7 +25,7 @@ export const GetAllUsers = async (req, res) => {
 };
 
 export const GetAllProfiles = async (req, res) => {
-  const db = getDB();
+  const db = "";
   const id = req.params.id;
   try {
     const users = await db
