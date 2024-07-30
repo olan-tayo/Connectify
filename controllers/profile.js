@@ -1,4 +1,36 @@
-import createUser from "../models/auth/signUp.js";
+import createUser from "../models/auth.js";
+import Profile from "../models/profile.js";
+import { ObjectId } from "mongodb";
+
+export const createProfile = async (req, res) => {
+  const id = req.params.id;
+  const { bios, profilePicture, location } = req.body;
+  try {
+    if (bios !== "" && profilePicture !== "" && location !== "") {
+      const createUserProfile = new Profile({
+        bios,
+        profilePicture,
+        location,
+        userId: new ObjectId(id),
+      });
+
+      const createdProfile = await createUserProfile.save();
+      if (!createdProfile) {
+        return res
+          .status(500)
+          .json({ error: "Could not create profile. Try again later." });
+      }
+
+      res.status(201).json({ message: "Profile created successfully!" });
+    }
+    res.status(500).json({ error: "All the fields are important" });
+  } catch (err) {
+    console.log(err.errorResponse);
+    res
+      .status(500)
+      .json({ error: "Something went wrong.Please try again now" });
+  }
+};
 
 export const GetAllProfiles = async (req, res) => {
   // const db = "";

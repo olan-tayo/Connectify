@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
-import createUser from "../models/auth/signUp.js";
+import createUser from "../models/auth.js";
 
 export const SignUp = async (req, res) => {
   const { firstName, lastName, email, username, phoneNumber, password } =

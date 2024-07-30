@@ -25,5 +25,5 @@ app.use(express.urlencoded({ extended: false }));
 
 ////// ROUTES
 app.use("/api/auth", auth);
-app.use("/api/users", users);
+app.use("/api/users", verifyToken, users);
 app.use("/api/profile", verifyToken, profile);

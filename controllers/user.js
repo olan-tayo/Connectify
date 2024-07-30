@@ -1,4 +1,4 @@
-import createUser from "../models/auth/signUp.js";
+import createUser from "../models/auth.js";
 
 export const GetAllUsers = async (req, res) => {
   try {
