@@ -1,13 +1,8 @@
 import express from "express";
-import {
-  createProfile,
-  GetAllProfiles,
-  updateProfile,
-} from "../../controllers/profile.js";
+import { GetAllProfiles, GetAllUsers } from "../../controllers/users.js";
 const router = express.Router();
 
-router.get("/:id", GetAllProfiles);
-router.post("/:id", createProfile);
-router.patch("/:id", updateProfile);
+router.get("/users", GetAllUsers);
+router.get("/profiles/:id", GetAllProfiles);
 
 export default router;
