@@ -26,6 +26,10 @@ export const createProfile = async (req, res) => {
     res.status(500).json({ error: "All the fields are important" });
   } catch (err) {
     console.log(err.errorResponse);
+    if (err.errorResponse) {
+      res.status(400).json({ error: "This user has a profile already" });
+    }
+
     res
       .status(500)
       .json({ error: "Something went wrong.Please try again now" });
@@ -64,26 +68,17 @@ export const updateProfile = async (req, res) => {
 };
 
 export const GetAllProfiles = async (req, res) => {
-  // const db = "";
-  // const id = req.params.id;
-  // try {
-  //   const users = await db
-  //     .collection("auth")
-  //     .find()
-  //     .sort({ author: 1 })
-  //     .toArray();
-  //   if (users.length === 0) {
-  //     res
-  //       .status(404)
-  //       .json({ data: [], message: "There are no profiles at the momemt" });
-  //   }
-  //   users.forEach((user) => {
-  //     delete user.password;
-  //   });
-  //   const filteredUser = users.filter((user) => user._id.toString() !== id);
-  //   res.status(200).json({ data: filteredUser, total: filteredUser.length });
-  // } catch (err) {
-  //   console.log(err);
-  //   res.status(500).json({ error: "Could not retrieve users. Try again now" });
-  // }
+  const id = req.params.id;
+
+  try {
+    const profiles = await Profile.find({
+      _id: { $ne: new ObjectId(id) },
+    }).populate("userId", "-password -__v");
+    res.status(200).json({ data: profiles });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      error: "Something went wrong while fetching all profiles. Try again now",
+    });
+  }
 };
